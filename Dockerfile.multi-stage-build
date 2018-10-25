@@ -1,0 +1,11 @@
+FROM golang:1.11-alpine as builder
+ADD . /usr/src/app
+WORKDIR /usr/src/app
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go-sample .
+
+FROM scratch
+ARG GIT_COMMIT=unspecified
+LABEL git_commit=$GIT_COMMIT
+COPY --from=builder go-sample /
+EXPOSE 8080
+ENTRYPOINT ["/go-sample"]
